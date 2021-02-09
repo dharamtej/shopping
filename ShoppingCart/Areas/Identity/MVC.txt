@@ -1,0 +1,588 @@
+ErrorHandling:
+Step1:
+*Create Empty Controller*
+
+ public class ErrorHandlingController : Controller
+    {
+
+        private readonly ILogger<ErrorHandlingController> _logger;
+
+        public ErrorHandlingController(ILogger<ErrorHandlingController> logger)
+        {
+            _logger = logger;
+        }
+       * public IActionResult Error()
+        {
+            try
+            {
+                var z = 1;
+                return Content((1 / z).ToString());
+            }
+            catch(Exception e)
+            {
+                _logger.LogError("Error occured. " + e.ToString());
+                // throw new Exception("This is Invalid Exception");
+            }
+            return View();
+        }*
+    }
+Step2:
+* Create View Based on the Method*
+
+//cookies
+Step1:
+*  create a Empty Cookie Controller *
+
+ public IActionResult Cook()
+        {
+            CookieOptions options = new CookieOptions()
+            {
+                Expires = DateTime.Now.AddSeconds(4)
+            };
+
+            HttpContext.Response.Cookies.Append("Address", "HYD", options);
+
+            return View();
+        }
+
+        public IActionResult Get()
+        {
+            string address = string.Empty;
+            HttpContext.Request.Cookies.TryGetValue("Address", out address);
+            return View();
+        }
+Step2:
+
+Create Views for Cook and Get Methods
+
+update the Get method
+
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    ViewData["Title"] = "Get";
+
+    
+    var address = string.Empty;
+    if (HttpContextAccessor.HttpContext.Request.Cookies["Address"] != null)
+    {
+        address = HttpContextAccessor.HttpContext.Request.Cookies["Address"].ToString();
+    }
+    else
+    {
+        address = "BABAJI";
+    }
+}
+
+    <h1>Get</h1>
+    
+    @address
+
+
+*Session*
+Step1:
+
+// Create a Session Controller(Uncomment)
+
+
+    public class CookieController : Controller
+    {
+    
+
+        public IActionResult Cook()
+        {
+            //HttpContext.Session.SetString("Name", "Ram");
+
+            //var name = HttpContext.Session.GetString("Name");
+        
+            CookieOptions options = new CookieOptions()
+            {
+                Expires = DateTime.Now.AddSeconds(4)
+            };
+
+            HttpContext.Response.Cookies.Append("Address", "HYD", options);
+
+            return View();
+        }
+
+        public IActionResult Get()
+        {
+            string address = string.Empty;
+            HttpContext.Request.Cookies.TryGetValue("Address", out address);
+            return View();
+        }
+    }
+Step2:
+//for Get method view(Uncomment)
+
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    ViewData["Title"] = "Get";
+
+    //var name = HttpContextAccessor.HttpContext.Session.GetString("Name");
+    var address = string.Empty;
+    if (HttpContextAccessor.HttpContext.Request.Cookies["Address"] != null)
+    {
+        address = HttpContextAccessor.HttpContext.Request.Cookies["Address"].ToString();
+    }
+    else
+    {
+        address = "BABAJI";
+    }
+}
+
+    <h1>Get</h1>
+    @*@name*@
+    <hr />
+    @address
+
+
+Step3:
+//Startup.cs
+
+//in configure Services
+
+ services.AddSession(Options =>
+            {
+                Options.IdleTimeout = TimeSpan.FromSeconds(10);
+            });
+
+
+            app.UseSession();
+
+-------------------------------Viewbag/Viewdata(Contrllers)---------------------------------------------------------------------
+using Microsoft.AspNetCore.Mvc;
+using MVC.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace MVC.Controllers
+{
+    public class ViewbagViewDataController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+
+        public ViewbagViewDataController(ApplicationDbContext context)
+        {
+            _context = context;
+
+        }
+
+        public IActionResult Index()
+        {
+            var data = _context.Emp.ToList();
+            var data1 = _context.Student.ToList();
+            ViewBag.students = data1;
+            return View(data);
+        }
+    }
+}
+------------------------------------------------View(Index)-----------------------
+@model IEnumerable<MVC.Models.Emp>
+
+@{
+    ViewData["Title"] = "Viewdata / Viewbag";
+    var student = (IEnumerable<MVC.Models.Student>)ViewBag.students;
+}
+<h1>@ViewData["Title"]</h1>
+<hr />
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Mobile)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.city)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Mobile)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.city)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Mobile)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.city)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Mobile)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.city)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+-------------------------Paging-----------------------------------------------
+
+Step1:
+
+-------Insert in Table controller---------------
+
+  public async Task<IActionResult> Paging(int? page, int? pagesize)
+        {
+            if (!page.HasValue)
+            {
+                page = 1;
+            }
+
+            if (!pagesize.HasValue)
+            {
+                pagesize = 5;
+            }
+
+            var data = await _context.Emp.ToPagedListAsync(page.Value, pagesize.Value);
+            return View(data);
+        }
+
+Step2:
+ -----------------------create view------------------
+
+
+@using X.PagedList.Mvc.Core;
+@model X.PagedList.IPagedList<MVC.Models.Emp>;
+
+
+@{
+    ViewData["Title"] = "Paging";
+    var pageNumber = ViewContext.HttpContext.Request.Query["page"];
+    var pageSize = ViewContext.HttpContext.Request.Query["pagesize"];
+    if (string.IsNullOrEmpty(pageSize))
+    {
+        pageSize = "5";
+    }
+
+    if (string.IsNullOrEmpty(pageNumber))
+    {
+        pageNumber = "1";
+    }
+}
+
+<h1>Paging</h1>
+<link href="~/css/IPagedList.css" rel="stylesheet" />
+<div class="row">
+    <div class="col-md-6">
+        <p>
+            <a asp-action="Create">Create New</a>
+        </p>
+    </div>
+    <div class="col-md-3">
+        <label class="mr-2 mt-2 text-info small"> Page number: @pageNumber | @Model.Count records</label>
+    </div>
+    <div class="col-md-3 text-right">
+        <div class="form-group form-inline">
+            <label class="mr-2">Page Size: </label>
+            <select name="PageSize" id="PageSize" class="form-control">
+                @for (var i = 1; i <= 10; i++)
+                {
+                    <option value="@(i*5)">@(i*5)</option>
+                }
+            </select>
+        </div>
+    </div>
+</div>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                Mobile
+            </th>
+            <th>
+                City
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Mobile)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.city)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div>
+    @Html.PagedListPager(Model, page => Url.Action("Paging", "Emps", new { page }) + "&pagesize=" + pageSize,
+        X.PagedList.Web.Common.PagedListRenderOptionsBase.PageNumbersOnly)
+</div>
+
+<script>
+    $(function () {
+
+        // set default value for Page size dropdown
+        var pageSizeJ = '@pageSize';
+        if (pageSizeJ.length > 0) {
+            $("#PageSize").val(pageSizeJ);
+        }
+
+        // fire on pageSize change
+        $("#PageSize").on("change", function () {
+            window.location.href = '/Emps/Paging?page=@pageNumber&pagesize=' + this.value;
+        });
+    });
+</script>
+
+-------------------------------------------------------------------------------
+
+----------------Searching-----------------------------------
+Step1:
+update in Table controller"
+
+----------------------------------
+  public IActionResult Search()
+        {
+            return View(new List<Emp>());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Search(IFormCollection form)
+        {
+            var fieldName = form["FieldName"].ToString();
+            var keyword = form["Keyword"].ToString();
+
+            IList<Emp> employees = new List<Emp>();
+            switch (fieldName)
+            {
+                case "ID":
+                    var id = int.Parse(keyword);
+                    employees = _context.Emp.Where(d => d.id.Equals(id)).ToList();
+                    break;
+                case "Name":
+                    employees = _context.Emp.Where(d => d.Name.StartsWith(keyword)).OrderBy(d => d.Name).ToList();
+                    break;
+                case "Email":
+                    employees = _context.Emp.Where(d => d.Email.StartsWith(keyword)).OrderBy(d => d.Email).ToList();
+                    break;
+                case "Mobile":
+                  
+                    employees = _context.Emp.Where(d => d.Mobile.Equals(keyword)).ToList();
+                    break;
+                case "City":
+                    employees = _context.Emp.Where(d => d.city.StartsWith(keyword)).OrderBy(d => d.city).ToList();
+                    break;           
+             }
+
+            return View(employees);
+        }
+
+Step2: Create for View Search Method 
+---------------------------------------------------
+
+@model IEnumerable<Emp>
+@{
+    ViewData["Title"] = "Search";
+}
+
+<h1>Search</h1>
+
+<div class="card card-body bg-light">
+    <form asp-action="Search" class="form-inline">
+        <div class="form-group">
+            <label class="control-label">Field Name &nbsp;&nbsp;</label>
+            <select name="FieldName" class="form-control">
+                <option value="ID">ID</option>
+                <option value="Name">Name</option>
+                <option value="Email">Email</option>
+                <option value="Mobile">Mobile</option>
+                <option value="City">City</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="control-label">&nbsp;&nbsp;Keyword &nbsp;&nbsp; </label>
+            <input type="text" placeholder="Keyword" name="Keyword" id="Keyword" required class="form-control" />
+        </div>
+        <div class="form-group">
+            &nbsp;&nbsp;<input type="submit" value="Go" class="btn btn-primary" />
+        </div>
+    </form>
+</div>
+@if (Model.Count() > 0)
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Mobile</th>
+                <th>City</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.id</td>
+                    <td>@item.Name</td>
+                    <td>@item.Email</td>
+                    <td>@item.Mobile</td>
+                    <td>@item.city</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+----------------------------------------------------------------------------------------------------
+
+---------------Table Sort------------------------------
+
+step1: Create Sort Method in Table Controller
+
+  public IActionResult Sort(string sortorder, string CurrentSort)
+        {
+            ViewBag.CurrentSort = sortorder;
+            sortorder = String.IsNullOrEmpty(sortorder) ? "Name" : sortorder;
+            sortorder = String.IsNullOrEmpty(sortorder) ? "PhoneNumber" : sortorder;
+            sortorder = String.IsNullOrEmpty(sortorder) ? "ProductId" : sortorder;
+            X.PagedList.IPagedList<Emp> cust = null;
+            switch (sortorder)
+            {
+                case "Id":
+                    if (sortorder.Equals(CurrentSort))
+
+                        cust = _context.Emp.OrderByDescending(s => s.id).ToPagedList();
+                    else
+                        cust = _context.Emp.OrderBy(s => s.id).ToPagedList();
+                    break;
+                case "Name":
+                    if (sortorder.Equals(CurrentSort))
+                        cust = _context.Emp.OrderByDescending(s => s.Name).ToPagedList();
+                    else
+                        cust = _context.Emp.OrderBy(s => s.Name).ToPagedList();
+                    break;
+                case "Email":
+                    if (sortorder.Equals(CurrentSort))
+                        cust = _context.Emp.OrderByDescending(s => s.Email).ToPagedList();
+                    else
+                        cust = _context.Emp.OrderBy(s => s.Email).ToPagedList();
+                    break;
+                case "Mobile":
+                    if (sortorder.Equals(CurrentSort))
+                        cust = _context.Emp.OrderByDescending(s => s.Mobile).ToPagedList();
+                    else
+                        cust = _context.Emp.OrderBy(s => s.Mobile).ToPagedList();
+                    break;
+                case "City":
+                    if (sortorder.Equals(CurrentSort))
+                        cust = _context.Emp.OrderByDescending(s => s.city).ToPagedList();
+                    else
+                        cust = _context.Emp.OrderBy(s => s.city).ToPagedList();
+                    break;
+                default:
+                    cust = _context.Emp.OrderBy(s => s.Name).ToPagedList();
+                    break;
+            }
+            return View(cust);
+        }
+
+
+-------------------------------------------------------------------------------
+create razor view for sort method and select List option
+step2: Paste this Code for each Coloumn
+
+ @Html.ActionLink("Name", "Sort",
+               new { sortOrder = "Name", CurrentSort = ViewBag.CurrentSort })
+
+------------------------------------------------------------------------------------------------

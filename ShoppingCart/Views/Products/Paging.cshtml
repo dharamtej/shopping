@@ -1,0 +1,89 @@
+﻿@model X.PagedList.IPagedList<ShoppingCart.Models.Product>
+@using X.PagedList.Mvc.Core;
+
+@{
+    ViewData["Title"] = "Paging";
+    var pagenumber = ViewContext.HttpContext.Request.Query["page"];
+    var pagesize = ViewContext.HttpContext.Request.Query["pagesize"];
+    if(string.IsNullOrEmpty(pagesize))
+    {
+        pagesize = "5";
+    }
+    if(string.IsNullOrEmpty(pagenumber))
+    {
+        pagenumber = "1";
+    }
+}
+
+
+<h1>Index</h1>
+<body style="background-color:cadetblue">
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+    <form method="get" asp-action="Index">
+        <p>
+            <input type="search" placeholder="Enter name or email!!" value="@ViewData["GetProductDetails"]" name="ProductSearch" style="width:500px;" />
+            <input type="submit" value="search" class="btn btn-primary" />|
+            <a asp-action="Index" class="btn btn-outline-success">Get all Product details</a>
+        </p>
+    </form>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                   ProductName
+                </th>
+                <th>
+                    ProductQuantity
+                </th>
+                <th>
+                    ProductPrice
+                </th>
+                <th>
+                   FileImage
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProductName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProductQuantity)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProductPrice)
+                    </td>
+                    <td>
+                        <img style="height:100px; width:150px;" src="~/Images/@item.FileImage" alt="@item.ProductName" />
+
+                        <p>
+                            Only
+
+                            @Html.DisplayFor(modelItem => item.ProductQuantity)
+
+                            Are Left!!!
+                        </p>
+                    </td>
+
+
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.ProductId" class="btn btn-primary" value="Edit">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-success" value="Details">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.ProductId" class="btn btn-danger" value="Delete">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</body>
+<div>
+    @Html.PagedListPager(Model,Page=>Url.Action("Paging","Products",new { Page})+"&pagesize"+pagesize,
+    X.PagedList.Web.Common.PagedListRenderOptionsBase.PageNumbersOnly)
+</div>

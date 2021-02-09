@@ -1,0 +1,594 @@
+
+------------------ADO.NET............Display table
+     public void ListEmployees()
+        {
+            string constr = "Data Source=192.168.50.95;Initial Catalog=aarja;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False";
+            SqlConnection connection = new SqlConnection(constr);
+            var sql = "select Emp_Id,Emp_Name,Salary,Doj,Gender from Employee1Dec";
+            SqlCommand command = new SqlCommand(sql, connection);
+            SqlDataAdapter adaptr = new SqlDataAdapter(command);
+            connection.Open();
+            DataTable table = new DataTable();
+            adaptr.Fill(table);
+            adaptr.Dispose();
+            command.Dispose();
+            foreach (DataRow row in table.Rows)
+            {
+                Console.WriteLine(row["Emp_Name"]+" " +row["Gender"]);
+            }
+            connection.Close();
+        }
+
+----------------------------ADO.Net.............Display stored procedure.................
+ public void ListSp()
+        {
+            string constr = "Data Source=192.168.50.95;Initial Catalog=aarja;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False";
+            SqlConnection connection = new SqlConnection(constr);
+            SqlCommand command = new SqlCommand("Dec11", connection);
+            connection.Open();
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@empid", 6567.00);
+            SqlDataAdapter adaptr = new SqlDataAdapter(command);
+            DataTable table = new DataTable();
+            adaptr.Fill(table);
+            adaptr.Dispose();
+            foreach (DataRow row in table.Rows)
+            {
+                Console.WriteLine(row["Emp_Name"] + " " + row["Gender"]);
+            }
+            table.Dispose();
+
+        }
+------------------------ADo.net............insert data into Table---------------
+ public void Insert()
+        {
+            using(SqlConnection connectin=new SqlConnection(constr))
+            {
+                var sql="insert into Employee1Dec(Emp_Name,Salary,Doj,Gender,Emp_Id) values(@name,@sal,@doj,@gender,@eid)";
+                using(SqlCommand command=new SqlCommand(sql,connectin))
+                {
+                    using (SqlDataAdapter adap=new SqlDataAdapter(command))
+                    {   var ename = Console.ReadLine();
+                        var salary = decimal.Parse(Console.ReadLine().ToString());
+                        var date = DateTime.Parse(Console.ReadLine().ToString());
+                        var gen = Console.ReadLine();
+                        var id = int.Parse(Console.ReadLine().ToString());
+                        SqlParameter[] par = new SqlParameter[5];
+                        par[0] = new SqlParameter("@name", SqlDbType.NVarChar, 50);
+                        par[0].Value = ename;
+                        par[1] = new SqlParameter("@sal", SqlDbType.Money);
+                        par[1].Value = salary;
+                        par[2] = new SqlParameter("@doj", SqlDbType.Date);
+                        par[2].Value = date;
+                        par[3] = new SqlParameter("@gender", SqlDbType.NChar, 10);
+                        par[3].Value = gen;
+                        par[4] = new SqlParameter("@eid", SqlDbType.Int);
+                        par[4].Value = id;
+                        command.Parameters.AddRange(par);
+                        connectin.Open();
+                        command.ExecuteNonQuery();
+                        connectin.Close();
+                    }
+                }
+            }
+        }
+--------------------insert data into Stored Procedure.........................
+    public void InsertDataTostoredPro()
+        {
+            using(SqlConnection connection=new SqlConnection(constr))
+            {
+                using(SqlCommand command=new SqlCommand("InsertMyDetails",connection))
+                {
+                    using(SqlDataAdapter adapter=new SqlDataAdapter(command))
+                    {
+                        SqlParameter[] par= new SqlParameter[6];
+                        par[0] = new SqlParameter("@Depart_id", SqlDbType.BigInt);
+                        par[0].Value = 1008;
+                        par[1] = new SqlParameter("@empname", SqlDbType.NVarChar, 50);
+                        par[1].Value = "Chandu";
+                        par[2] = new SqlParameter("@sal", SqlDbType.Money);
+                        par[2].Value = 56765546;
+                        par[3] = new SqlParameter("@Doj", SqlDbType.Date);
+                        par[3].Value = "19/10/202";
+                        par[4] = new SqlParameter("@gender", SqlDbType.NChar, 10);
+                        par[4].Value = "M";
+                        par[5] = new SqlParameter("@Eid", SqlDbType.Int);
+                        par[5].Value = 109;
+                        command.Parameters.AddRange(par);
+                
+                        command.CommandType = CommandType.StoredProcedure;
+                        connection.Open();
+                        command.ExecuteNonQuery();
+                        connection.Close();
+				
+
+
+                    }
+                }
+            }
+	}
+-----------------------------------update-----------------------------
+public void Update()
+        {
+            using (SqlConnection conn = new SqlConnection(constr))
+            {
+                var sql = "UPDATE Employee1Dec set Emp_Name='Mithra' where Emp_Name='srav'";
+                using(SqlCommand command=new SqlCommand(sql,conn))
+                 {
+                    conn.Open();
+                    command.ExecuteNonQuery();
+                    conn.Close();
+                }
+            }
+        }
+----------------------------delete-------------------------
+  public void Delete()
+        {
+            using (SqlConnection conn = new SqlConnection(constr))
+            {
+                var sql = "DELETE FROM Employee1Dec WHERE  Emp_Name=@name";
+                using (SqlCommand command = new SqlCommand(sql, conn))
+                {
+                    var n = Console.ReadLine();
+                    command.Parameters.AddWithValue("@name", n);
+                    conn.Open();
+                    command.ExecuteNonQuery();
+                    conn.Close();
+                }
+            }
+        }
+----------------------deleteSP------------------------
+public void DeleteSp()
+        {
+            using (SqlConnection conn = new SqlConnection(constr))
+            {
+            
+                using (SqlCommand command = new SqlCommand("Dec11", conn))
+                {
+                    var n = Console.ReadLine();
+                    command.Parameters.AddWithValue("@empname", n);
+                    conn.Open();
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.ExecuteNonQuery();
+                    conn.Close();
+                }
+            }
+        }
+--------------retrieve multiple table (sp).................
+public void Multiple()
+        {
+            DataSet data = new DataSet();
+            using(SqlConnection connection=new SqlConnection(constr))
+            {
+                using (SqlCommand command = new SqlCommand("MultipleTables", connection))
+                { 
+                    using(SqlDataAdapter adapter=new SqlDataAdapter(command))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        adapter.Fill(data);          
+                    }
+                                          
+                }
+                foreach(DataRow row in data.Tables[0].Rows)
+                {
+                    Console.WriteLine(row["Emp_Name"]);
+                }
+                Console.WriteLine("second table");
+                foreach (DataRow row in data.Tables[1].Rows)
+                {
+                    Console.WriteLine(row["Emp_Name"]);
+                }
+            }
+            
+        }
+----------------------multipletables-----------------------
+ public void MultipleTableData()
+        {
+            SqlConnection connection = new SqlConnection(constr);
+            var sql1 = "select * from Employees";
+            var sql2 = "select * from Employee11dec";
+            SqlCommand command = new SqlCommand(sql1, connection);
+            SqlCommand command1 = new SqlCommand(sql2, connection);
+            SqlDataAdapter adapter = new SqlDataAdapter(command);
+            SqlDataAdapter adap = new SqlDataAdapter(command1);
+            DataSet table = new DataSet();
+            adapter.SelectCommand = command;
+            adapter.Fill(table, "First Table");
+
+            adapter.SelectCommand.CommandText = sql2;
+            adapter.Fill(table, "Second Table");
+
+            foreach (DataRow row in table.Tables[0].Rows)
+            {
+                Console.WriteLine(row["Emp_id"] + " " + row["Emp_name"]);
+            }
+            Console.WriteLine("---------------Employee11dec-------------");
+            foreach (DataRow row in table.Tables[1].Rows)
+            {
+                Console.WriteLine(row["Customer_Id"] + " " + row["Emp_name"]);
+            }
+
+        }   
+....................data reader..................
+  public void DataRead()
+        {
+            using (SqlConnection connection = new SqlConnection(constr))
+            {
+                using(SqlCommand command=new SqlCommand("MultipleTables",connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    connection.Open();
+                    using(SqlDataReader reader=command.ExecuteReader(CommandBehavior.CloseConnection))
+                    {
+                        while(reader.Read())
+                        {
+                            Console.WriteLine(reader.GetString("Emp_Name"));
+                        }
+                        reader.NextResult();
+                        while (reader.Read())
+                        {
+                            Console.WriteLine(reader.GetInt32("Emp_Id"));
+                        }
+                    }
+                }
+            }
+
+        }
+
+--------------------transaction------------------------------
+ public  void UseOfTransactions()
+        {
+            string cons = "Data Source=192.168.50.95;Initial Catalog=aarja;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False";
+            using (SqlConnection connection = new SqlConnection(cons))
+            {
+                connection.Open();
+                var transaction = connection.BeginTransaction();
+                try
+                {
+                  
+                    var sql = "INSERT INTO Employees (Emp_name,Salary) VALUES (@name,@Cid)";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@name", "SQL Department");
+                        command.Parameters.AddWithValue("@Cid", 77);
+                        command.Transaction = transaction;
+                        command.ExecuteNonQuery();
+                    }
+
+                   
+                    sql = "INSERT INTO depa (name,location) VALUES (@Gender,@cid)";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@Gender", "fhF");
+                        command.Parameters.AddWithValue("@Cid", "shad");
+                        command.Transaction = transaction;
+                        command.ExecuteNonQuery();
+                    }
+
+
+                    transaction.Commit();
+                    connection.Close();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    Console.WriteLine("Error occured. " + ex.ToString());
+                }
+                finally
+                {
+                    transaction.Dispose();
+                }
+            }
+        }
+
+-----------------------LINQ---------------------------------
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Text;
+
+namespace PractiseAdoLinq
+{
+    public class EmployeeDetails
+    {
+        DataTable tab = new DataTable();
+        public string constr = "Data Source=192.168.50.95;Initial Catalog=aarja;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False";
+        public IList<EmpProp> ShowDetails()
+        {
+            using (SqlConnection connection = new SqlConnection(constr))
+            {
+                var sql = "select Emp_name,Emp_id,Doj,salary,Customer_id,Gender from Employee11dec";
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                    {
+
+                        adapter.Fill(tab);
+                    }
+                }
+            }
+            IList<EmpProp> employee = new List<EmpProp>();
+            foreach (DataRow row in tab.Rows)
+            {
+                var emp = new EmpProp()
+                {
+                    Emp_Id = int.Parse(row["Emp_id"].ToString()),
+                    Emp_name = row["emp_name"].ToString(),
+                    Customer_ID =Int64.Parse(row["customer_id"].ToString()),
+                    Gender = row["gender"].ToString(),
+                    Doj = DateTime.Parse(row["doj"].ToString()),
+                    Salary = decimal.Parse(row["Salary"].ToString())
+                };
+                employee.Add(emp);
+            }
+            return employee;
+
+
+        }
+    }
+}
+----------------------------------------entity Relation------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace EntityFramework
+{
+   public  class DAL
+    {
+        public void Display()
+        {
+            using(Training2020DbContext context =new Training2020DbContext())
+            {
+                var Employee = context.Employee11dec;
+                foreach (var employee in Employee)
+                {
+                    Console.WriteLine(employee.Emp_Name + " "+employee.Gender);
+                }
+            }
+        }
+        public void AddEmployee(string Empname,int Cid)
+        {
+            using(Training2020DbContext context=new Training2020DbContext())
+            {
+                Employee11de emp = new Employee11de()
+                {
+                    Emp_Name = Empname,
+                
+                    Customer_Id=Cid
+                    
+                
+                   
+                };
+                context.Employee11dec.Add(emp);
+                context.SaveChanges();
+                
+            }
+        }
+        public void UpdateEmployee(int Cid, int id)
+        {
+            using(Training2020DbContext context=new Training2020DbContext())
+            {
+                var Emp = context.Employee11dec.Where(d => d.Emp_Id == Cid).FirstOrDefault();
+
+                if(Emp!=null)
+                {
+                    Emp.Customer_Id = Cid;
+                    context.Entry(Emp).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                    context.SaveChanges();
+                }
+           }
+        }
+        public void DeleteEmployee(Int64 cid)
+        {
+            using(Training2020DbContext context =new Training2020DbContext())
+            {
+                var emp = context.Employee11dec.Where(d => d.Customer_Id == cid).FirstOrDefault();
+                if(emp!=null)
+                {
+                    context.Employee11dec.Remove(emp);
+                    context.SaveChanges();
+                }
+            }
+        }
+       public void ListWithJoins()
+        {
+            using(Training2020DbContext context = new Training2020DbContext())
+            {
+                var data = from employee in context.Employee11dec
+                           join department in context.Depart11dec
+                           on employee.Customer_Id equals department.Customer_Id
+                           select new
+                           {
+                               Emp_Id = employee.Emp_Id,
+                               Emp_Name = employee.Emp_Name,
+                               Customer_Id=employee.Customer_Id,
+                               Department = department.Department,
+                               items = department.items
+                           };
+
+                foreach (var item in data)
+                {
+                    Console.WriteLine(item.Emp_Id + item.Emp_Name+item.Customer_Id + item.Department+item.items);
+                }
+            }
+        }
+    }
+}
+-------------------------
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace EntityFramework
+{
+    public class Training2020DbContext : DbContext
+    {
+        static string constr = string.Empty;
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            constr = "Data Source=192.168.50.95;Initial Catalog=aarja;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False";
+            optionsBuilder.UseSqlServer(constr);
+        }
+        public DbSet<Employee11de> Employee11dec { get; set; }
+
+        public DbSet<Depart11de> Depart11dec { get; set; }
+    }
+}
+............................................ntier...........................
+using System;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+
+namespace EmployeeDAL
+{
+    public class EmployeeDetails
+    {
+        DataTable table = new DataTable();
+        public  string _connStr = ConfigurationManager.ConnectionStrings["Constr"].ConnectionString;
+        public DataTable LoadDetails(Int64 cid)
+        {
+           
+            using (SqlConnection conn = new SqlConnection(_connStr))
+            {
+                var sql = "select * from Employee11dec where Customer_Id=@cid ";
+                using (SqlCommand command = new SqlCommand(sql, conn))
+                {
+                    command.Parameters.AddWithValue("@empId", cid);
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                    {
+
+                        adapter.Fill(table);
+                    }
+                }
+                return table;
+            }
+           
+        }
+    
+    }
+   
+}
+--------------------------{or}-------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Text;
+
+namespace EmployeeDAL
+{
+    public class DepartDAL
+    {
+        DataTable table = new DataTable();
+        public static string _connStr = ConfigurationManager.ConnectionStrings["Constr"].ConnectionString;
+        public DataTable LoadItemDetails(Int64 cid)
+        {
+            
+
+            using (SqlConnection conn = new SqlConnection(_connStr))
+            {
+                var sql = "select customer_id,quality,items,department from Depart11dec where Customer_Id=@empId";
+                using (SqlCommand command = new SqlCommand(sql, conn))
+                {
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                    {
+
+                        adapter.Fill(table);
+                    }
+                }
+                return table;
+            }
+           
+        }
+    }
+}
+
+------------------------------------------------------------------------------------------items------------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Text;
+using EmployeeDAL;
+namespace EmployeeItemsDetails
+{
+    public class ItemDetails
+    {
+        public DataSet Getdetails(Int64 cid)
+        {
+          
+
+            EmployeeDetails employeeDetails = new EmployeeDetails();
+            var table = employeeDetails.LoadDetails(cid);
+
+            DepartDAL itemDAL = new DepartDAL();
+            var tableitem = itemDAL.LoadItemDetails(cid);
+            DataSet dataSet = new DataSet();
+            dataSet.Tables.Add(table);
+            dataSet.Tables.Add(tableitem);
+            return dataSet;
+
+        }
+
+    }
+}
+--------------------------------------------------program.cs
+
+using EmployeeItemsDetails;
+using System;
+using System.Data;
+
+namespace NtierArchitecture
+{
+    public class Program
+    {
+       
+
+        public static void Main(string[] args)
+        {
+            Console.WriteLine("enter id");
+            var cid = int.Parse(Console.ReadLine().ToString());
+
+            
+            DataSet dataSet = new DataSet();
+            try
+            {
+                dataSet = new ItemDetails().Getdetails(cid);
+            }
+            
+            
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error occured. " + ex.ToString());
+            }
+
+           
+
+            foreach (DataRow row in dataSet.Tables[0].Rows)
+            {
+                Console.WriteLine(row["customer_id"] + " | " + row["items"] );
+            }
+            foreach (DataRow row in dataSet.Tables[1].Rows)
+            {
+                Console.WriteLine(row["Emp_Name"] + " | " + row["Salary"]);
+            }
+
+        }
+    }
+}
+
+$(document).ready(function() {
+$("button").click(function() {
+$("p").animate({left:'200px'});
+
+});
+});
+$("p").css("color","red").slideUp(2000).slideDown(2000);
+$("p").stop();
+$("div").delay(3000).fadeIn();
+$("div").animate({left:'200px',opacity:'0.5', height:'150px', width:'150px'}, 5000);

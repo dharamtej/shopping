@@ -1,0 +1,530 @@
+ADo.net:
+----------------------------
+First create a one console app and next create a program and methods as like 
+1)Select using command using Ado.net
+namespace Ado.net
+{
+    public class Methods
+    {
+      static string _conn = ConfigurationManager.ConnectionStrings["CONN"].ConnectionString;
+        public void Select()
+        {
+            using (SqlConnection connection = new SqlConnection(_conn))
+            {
+                DataTable dt = new DataTable();
+                var sql = "select * from employee05";
+                using (SqlCommand cmd = new SqlCommand(sql,connection))
+                {
+                    using(SqlDataAdapter adp=new SqlDataAdapter(cmd))
+                    {
+                        adp.Fill(dt);
+                    }
+                }
+                foreach (DataRow dr in dt.Rows)
+                {
+                    Console.WriteLine(dr["Id"] + " " + dr["Fullname"]);
+                }
+            }
+        }
+    }
+}
+---------------------------------------------
+2)Select by stored procedure
+Create one stored procedure 
+CREATE PROCEDURE SelectUsingADonet
+	-- Add the parameters for the stored procedure here
+	
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	
+
+    -- Insert statements for procedure here
+	select * from employee05 
+END
+GO
+exec SelectUsingADonet
+------------------------------------
+create a method in C#
+public void SelectUsingsp()
+        {
+            using(SqlConnection connection=new SqlConnection(_conn))
+            {
+                DataTable dt = new DataTable();
+                using(SqlCommand cmd=new SqlCommand("SelectUsingADonet",connection))
+                {
+                    using(SqlDataAdapter adp=new SqlDataAdapter(cmd))
+                    {
+                        adp.Fill(dt);
+                    }
+                }
+                foreach (DataRow dr in dt.Rows)
+                {
+                    Console.WriteLine(dr["Id"] + " " + dr["Fullname"]);
+                }
+            }
+        }
+--------------------------------------------------------------
+insert using command using Ado.net using without parameters
+-----
+Create a one method
+public void Insert()
+        {
+            using (SqlConnection connection = new SqlConnection(_conn))
+            {
+                DataTable dt = new DataTable();
+                var sql = "insert into employee05(Id,Fullname,Salary,Deptno)values(@id,@fn,@sal,@Dept)";
+                using (SqlCommand cmd = new SqlCommand(sql, connection))
+                {
+                    Console.WriteLine("enter the id");
+                    int id = int.Parse(Console.ReadLine());
+                    cmd.Parameters.AddWithValue("@id", id);
+                    Console.WriteLine("enter the fullname");
+                    string fn = Console.ReadLine();
+                    cmd.Parameters.AddWithValue("@fn", fn);
+                    Console.WriteLine("enter the Salary");
+                    decimal sal = decimal.Parse(Console.ReadLine());
+                    cmd.Parameters.AddWithValue("@sal", sal);
+                    Console.WriteLine("enter the Deptno");
+                    int dept = int.Parse(Console.ReadLine());
+                    cmd.Parameters.AddWithValue("@Dept",dept);
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+                    connection.Close();
+
+                }
+
+            }
+        }
+----------------------
+Insert using Sp using Ado.net
+CREATE PROCEDURE InsertUsingSp
+	-- Add the parameters for the stored procedure here
+	@id int,
+	@full nvarchar(50),
+	@sal decimal,
+	@dept int
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+	select * from employee05
+    -- Insert statements for procedure here
+	insert into employee05(id,fullname,salary,deptno)values(@id,@full,@sal,@dept)
+END
+GO
+---------
+Method
+public void InsertUsingsp()
+        {
+            using (SqlConnection connection = new SqlConnection(_conn))
+            {
+                DataTable dt = new DataTable();
+
+                using (SqlCommand cmd = new SqlCommand("InsertUsingSp", connection))
+                {
+
+                    SqlParameter[] sql = new SqlParameter[4];
+                    sql[0] = new SqlParameter("@id", SqlDbType.Int);
+                    Console.WriteLine("enter the id");
+                    sql[0].Value = int.Parse(Console.ReadLine());
+                    Console.WriteLine("enter the fullname");
+                    sql[1] = new SqlParameter("@full", SqlDbType.NVarChar, 50);
+                    sql[1].Value = Console.ReadLine();
+                    Console.WriteLine("enter the salary");
+                    sql[2] = new SqlParameter("@sal", SqlDbType.Decimal);
+                    sql[2].Value = decimal.Parse(Console.ReadLine());
+                    Console.WriteLine("enter the deptmo");
+                    sql[3] = new SqlParameter("@dept", SqlDbType.Int);
+                    sql[3].Value = int.Parse(Console.ReadLine());
+                    connection.Open();
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddRange(sql);
+                    cmd.ExecuteNonQuery();
+                    connection.Close();
+
+
+
+
+
+                }
+            }
+        }
+---------------------------------------------------------
+update using command 
+____________
+public void Updatee()
+        {
+            using (SqlConnection connection = new SqlConnection(_conn))
+            {
+                var sql = "update employee05 set fullname=@full where Id=@id";
+                using (SqlCommand cmd = new SqlCommand(sql, connection))
+                {
+                    SqlParameter[] sq = new SqlParameter[2]; 2:25 AM 1/9/20212:25 AM 1/9/202176y 
+                    sq[0] = new SqlParameter("@full", SqlDbType.NVarChar, 50);
+                    sq[0].Value = Console.ReadLine();
+                    sq[1] = new SqlParameter("@id", SqlDbType.Int);
+                    sq[1].Value = int.Parse(Console.ReadLine());
+                    connection.Open();
+                    cmd.Parameters.AddRange(sq);
+                    cmd.ExecuteNonQuery();
+                    //cmd.CommandType = CommandType.StoredProcedure;
+                    connection.Close();
+                }
+            }
+        }
+
+update using Stored procedure
+---------------------------------------------------------------
+Stored procedure
+CREATE PROCEDURE Updateusingsp 
+	-- Add the parameters for the stored procedure here
+	@id int,
+	@fullname nvarchar(50)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	update employee05 set Fullname=@fullname where Id=@id
+END
+GO
+method()
+  public void UpdateeUsingSp()
+        {
+            using(SqlConnection connection=new SqlConnection(_conn))
+            {
+                using(SqlCommand cmd=new SqlCommand("Updateusingsp",connection))
+                {
+                    SqlParameter[] prm = new SqlParameter[2];
+                    prm[0] = new SqlParameter("@id", SqlDbType.Int);
+                    prm[0].Value = int.Parse(Console.ReadLine());
+                    prm[1] = new SqlParameter("@fullname", SqlDbType.NVarChar, 50);
+                    prm[1].Value = Console.ReadLine();
+                    cmd.Parameters.AddRange(prm);
+                    connection.Open();
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.ExecuteNonQuery();
+                    connection.Close();
+
+                }
+            }
+
+Transcation :
+_______________________
+
+ public void Transcation()
+        {
+            using(SqlConnection connection=new SqlConnection(_conn))
+            { 
+
+            connection.Open();
+            var trans = connection.BeginTransaction();
+            try
+            {
+
+                var sql = "insert into employee05(id)values(@id)";
+                using (SqlCommand cmd = new SqlCommand(sql, connection))
+                {
+                    cmd.Parameters.AddWithValue("@id", "9");
+
+                    cmd.Transaction = trans;
+                    cmd.ExecuteNonQuery();
+                }
+                var sq1 = "update employee05 set fullname=@full where id=@id";
+                using (SqlCommand cmd = new SqlCommand(sq1, connection))
+                {
+                    cmd.Parameters.AddWithValue("@full", "SPSK");
+                    cmd.Parameters.AddWithValue("@id", "9");
+                    cmd.Transaction = trans;
+                    cmd.ExecuteNonQuery();
+                }
+                trans.Commit();
+                connection.Close();
+            }
+            catch (Exception e)
+            {
+                trans.Rollback();
+                Console.WriteLine(e.Message.ToString());
+            }
+            finally
+            {
+                trans.Dispose();
+            }
+        }
+
+
+using data reader
+----------------------------------------------------------
+Data reader without stored procedure:
+ public void Listwithreader()
+        {
+            using(SqlConnection connection=new SqlConnection(_conn))
+            {
+                var sql = "select * from employee05";
+                using(SqlCommand cmd=new SqlCommand(sql,connection))
+                {
+                    connection.Open();
+                    using(SqlDataReader reader=cmd.ExecuteReader(CommandBehavior.CloseConnection))
+                    {
+                        while(reader.Read())
+                        {
+                            Console.WriteLine(reader.GetInt32("Id")+" "+reader.GetString("fullname"));
+                        }
+                    }
+                }
+            }
+        }
+
+
+using data reader with stord procedure with two tables
+Stored procedure:
+CREATE PROCEDURE DatareaderWithSPWIthtwotables
+	-- Add the parameters for the stored procedure here
+	
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+    select * from employee05
+    select * from department05
+END
+GO
+
+method:
+public void ListWithSpWithtwotabels()
+        {
+            using(SqlConnection connection = new SqlConnection(_conn))
+            {
+
+                using (SqlCommand cmd = new SqlCommand("DatareaderWithSPWIthtwotables", connection))
+                {
+                    connection.Open();
+                    using(SqlDataReader reader=cmd.ExecuteReader(CommandBehavior.CloseConnection))
+                    {
+                        while(reader.Read())
+                        {
+                            Console.WriteLine(reader.GetInt32("Id")+" "+reader.GetString("Fullname"));
+                        }
+                        reader.NextResult();
+                        while(reader.Read())
+                        {
+                            Console.WriteLine(reader.GetInt32("Id") + " " + reader.GetString("Fullname"));
+                        }
+                        reader.Close();
+                    }
+                }
+            }
+
+Entity FrameWork:
+-----------------------------------------------------------
+first create one folder rename as model in that folder create one class as "Employee05"
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
+
+namespace Entityframework.Models
+{
+    [Table("Employee05")]
+   public  class Employee05
+    {
+        [Key]
+        public int? Id{ get; set; }
+        public string Fullname { get; set; }
+        public decimal? salary { get; set; }
+        public int? Deptno { get; set; }
+    }
+}
+and create one more class "department 05")
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
+
+namespace Entityframework.Models
+{
+    [Table("Department05")]
+   public  class department05
+    {
+        [Key]
+        public int? id { get; set; }
+        public string fullname { get; set; }
+        public string loc { get; set; }
+        
+    }
+}
+and create one dbcontext class
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Configuration;
+
+namespace Entityframework.Models
+{
+   public class MainDBContext:DbContext
+    {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+           string _conn = ConfigurationManager.ConnectionStrings["CONN"].ConnectionString;
+            optionsBuilder.UseSqlServer(_conn);
+
+            base.OnConfiguring(optionsBuilder);
+        }
+        public DbSet<Employee05> Employee05 { get; set; }
+        public DbSet<department05> department05 { get; set; }
+    }
+}
+and create a one class in outside and reename as Methods
+For Select 
+namespace Entityframework
+{
+   public class Methods
+    {
+        public void Select()
+        {
+            using(MainDBContext context=new MainDBContext())
+            {
+                var emp = context.Employee05.ToList();
+                foreach (var item in emp)
+                {
+                    Console.WriteLine(item.Id+" "+item.Fullname+" "+item.salary+" "+item.Deptno);
+                }
+                var dept = context.department05.ToList();
+                foreach (var item in dept)
+                {
+                    Console.WriteLine(item.id+" "+item.fullname+" "+item.loc);
+                }
+            }
+        }
+    }
+}
+and call this method in program.cs
+For insert
+________
+public void insert()
+        {
+            using(MainDBContext context=new MainDBContext())
+            {
+                Console.WriteLine("enter the empid,fullname,salry,deptno");
+                var emp = new Employee05()
+                {
+                    Id = int.Parse(Console.ReadLine()),
+                    Fullname = Console.ReadLine(),
+                    salary = decimal.Parse(Console.ReadLine()),
+                    Deptno = int.Parse(Console.ReadLine())
+                };
+                context.Employee05.Add(emp);
+                Console.WriteLine("enter fullname,id,loc");
+                var dept = new department05()
+                {
+                    fullname = Console.ReadLine(),
+                    id = int.Parse(Console.ReadLine()),
+                    loc = Console.ReadLine()
+
+                };
+                context.department05.Add(dept);
+                context.SaveChanges();
+            }
+        }
+For update:
+  public void update()
+        {
+            using(MainDBContext context=new MainDBContext())
+            {
+               int no = int.Parse(Console.ReadLine());
+                Console.WriteLine("enter the salary Deptno");
+                var emp = context.Employee05.Where(s => s.Id.Equals(no)).FirstOrDefault();
+                if(emp!=null)
+                {
+                    emp.salary = decimal.Parse(Console.ReadLine());
+                    emp.Deptno = int.Parse(Console.ReadLine());
+                    context.Entry(emp).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                    context.SaveChanges();
+
+                }
+                int num = int.Parse(Console.ReadLine());
+                Console.WriteLine("enter the location");
+                var dept = context.department05.Where(s => s.id.Equals(num)).FirstOrDefault();
+                if(dept!=null)
+                {
+                    dept.loc = Console.ReadLine();
+                    context.Entry(dept).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                    context.SaveChanges();
+                    
+                }
+            }
+        }
+for delete
+______________________________
+public void delete()
+        {
+            using(MainDBContext context=new MainDBContext())
+            {
+                int no = int.Parse(Console.ReadLine());
+                var dept = context.department05.Where(s => s.id.Equals(no)).FirstOrDefault();
+                if(dept!=null)
+                {
+                    context.department05.Remove(dept);
+                    context.SaveChanges();
+                }
+            }
+        }
+for join
+--------------------
+ public void Join()
+        {
+            using(MainDBContext context=new MainDBContext())
+            {
+                var joins = from Employee05 in context.Employee05
+                            join department05 in context.department05
+                            on Employee05.Id equals department05.id
+                            select new
+                            {
+                                empid = Employee05.Id,
+                                empname = Employee05.Fullname,
+                                empdepartment = department05.fullname,
+                            };
+                foreach (var item in joins)
+                {
+                    Console.WriteLine(item.empid+" "+item.empname+" "+item.empdepartment);
+                }
+                          
+            }
+        }
+
+Logging:
+________________________
+https://github.com/NLog/NLog/wiki/Getting-started-with-ASP.NET-Core-3 Go through this site and made changes as same
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,58 @@
+controller code
+
+
+public IActionResult Index(string sortorder , string CurrentSort)
+        {
+
+            ViewBag.CurrentSort = sortorder;
+            sortorder = String.IsNullOrEmpty(sortorder) ? "Name" : sortorder;
+            sortorder = String.IsNullOrEmpty(sortorder) ? "PhoneNumber" : sortorder;
+            sortorder = String.IsNullOrEmpty(sortorder) ? "ProductId" : sortorder;
+            X.PagedList.IPagedList<Customer> cust = null;
+            switch (sortorder)
+            {
+                case "Name":
+                    if (sortorder.Equals(CurrentSort))
+
+                        cust = _context.Customer.OrderByDescending(s => s.CustomerName).ToPagedList();
+                    else
+                        cust = _context.Customer.OrderBy(s => s.CustomerName).ToPagedList();
+                    break;
+                case "PhoneNumber":
+                    if (sortorder.Equals(CurrentSort))
+                        cust =  _context.Customer.OrderByDescending(s => s.PhoneNumber).ToPagedList();
+                    else
+                        cust = _context.Customer.OrderBy(s => s.PhoneNumber).ToPagedList();
+                    break;
+                case "ProductId":
+                    if (sortorder.Equals(CurrentSort))
+                        cust =  _context.Customer.OrderByDescending(s => s.ProductId).ToPagedList();
+                    else
+                        cust = _context.Customer.OrderBy(s => s.ProductId).ToPagedList();
+                    break;
+
+                default:
+                 cust=   _context.Customer.OrderBy(s => s.CustomerName).ToPagedList();
+                    break;
+            }
+            return View(cust);
+        }
+
+
+view code:
+
+           <th>
+              
+                @Html.ActionLink("CustomerName", "Index",
+                new { sortOrder = "Name", CurrentSort = ViewBag.CurrentSort })
+            </th>
+            <th>
+               
+                @Html.ActionLink("PhoneNumber", "Index",
+                new { sortOrder = "PhoneNumber", CurrentSort = ViewBag.CurrentSort })
+            </th>
+            <th>
+              
+                @Html.ActionLink("ProductId", "Index",
+                new { sortOrder = "ProductId", CurrentSort = ViewBag.CurrentSort })
+            </th>

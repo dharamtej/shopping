@@ -1,0 +1,58 @@
+﻿@model IEnumerable<ShoppingCart.Models.Product>
+
+@{
+    ViewData["Title"] = "Sorting";
+}
+
+<h1>Sorting</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @*@Html.DisplayNameFor(model => model.ProductId)*@
+                @Html.ActionLink("ProductId", "Sorting", new { sort = "ProductId", Currentsort = ViewBag.Currentsort })
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.ProductName)*@
+                @Html.ActionLink("ProductName", "Sorting", new { sort = "ProductName", Currentsort = ViewBag.Currentsort })
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductQuantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FileImage)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductQuantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FileImage)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

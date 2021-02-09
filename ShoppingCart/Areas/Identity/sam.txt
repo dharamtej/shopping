@@ -1,0 +1,298 @@
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Data;
+using System.Text;
+
+namespace practiceado.net
+{
+    public class Functions
+    {
+        static void Main(string[] args)
+        {
+            //Console.WriteLine("=============insert =================");
+            //insert();
+            //Console.WriteLine("=========insertstored=======");
+            //insertstored();
+            //Console.WriteLine("===============update===========");
+            //update();
+            //Console.WriteLine("==========updatestored=============");
+            //updatestored();
+            //Console.WriteLine("==========display========");
+            //display();
+            //Console.WriteLine("===========displaystored==============");
+            //displaystored();
+            //Console.WriteLine("multipleresults");
+            //multipleresults();
+            //Console.WriteLine("==================readers==============");
+            //reader();
+            //Console.WriteLine("==============multiple reader==========");
+            //multiplereader();
+            Console.WriteLine("============transaction===========");
+            transaction();
+        } 
+        private static void insert()
+        {
+            string str = "Data Source=192.168.50.95;Initial Catalog=jshaik;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False";
+            using(SqlConnection con=new SqlConnection(str))
+            {
+                var sql = "insert into employees11december20(emplid,emplname,age,salary,pf,mobile)values(@emplid,@emplname,@age,@salary,@pf,@mobile)";
+                using(SqlCommand cmd=new SqlCommand(sql, con))
+                {
+                    using (SqlDataAdapter ad = new SqlDataAdapter())
+                    {
+
+
+                        SqlParameter[] p = new SqlParameter[6];
+                        p[0] = new SqlParameter("@emplid", SqlDbType.Int);
+                        p[0].Value = 13;
+                        p[1] = new SqlParameter("@emplname", SqlDbType.VarChar, 50);
+                        p[1].Value = "arifa";
+                        p[2] = new SqlParameter("@age", SqlDbType.SmallInt);
+                        p[2].Value = 41;
+                        p[3] = new SqlParameter("@salary", SqlDbType.Money);
+                        p[3].Value = 250000;
+                        p[4] = new SqlParameter("pf", SqlDbType.Decimal, 18);
+                        p[4].Value = 2552.002;
+                        p[5] = new SqlParameter("@mobile", SqlDbType.BigInt);
+                        p[5].Value = 65285357369;
+                        cmd.Parameters.AddRange(p);
+                        con.Open();
+                        cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+            }
+        } 
+        private static void insertstored()
+        {
+            string str = "Data Source=192.168.50.95;Initial Catalog=jshaik;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False";
+            using(SqlConnection con=new SqlConnection(str))
+            {
+                using(SqlCommand cmd=new SqlCommand("newsp", con))
+                {
+                    SqlParameter[] p = new SqlParameter[5];
+                    p[0] = new SqlParameter("@emplname", SqlDbType.VarChar, 50);
+                    p[0].Value = "ameena";
+                    p[1] = new SqlParameter("@age", SqlDbType.SmallInt);
+                    p[1].Value = 8;
+                    p[2] = new SqlParameter("@salary", SqlDbType.Money);
+                    p[2].Value = 65546;
+                    p[3] = new SqlParameter("@pf", SqlDbType.Decimal);
+                    p[3].Value = 14511.245;
+                    p[4] = new SqlParameter("@mobile", SqlDbType.BigInt);
+                    p[4].Value = 2658652454;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddRange(p);
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+        private static void update()
+        {
+            string str = "Data Source=192.168.50.95;Initial Catalog=jshaik;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False";
+            using(SqlConnection con=new SqlConnection(str))
+            {
+                var sql = "update employees11december20 set emplname=@emplname,age=@age,salary=@salary,pf=@pf where mobile=@mobile";
+                using(SqlCommand cmd=new SqlCommand(sql, con))
+                {
+                    using(SqlDataAdapter ad=new SqlDataAdapter())
+                    {
+                        SqlParameter[] p = new SqlParameter[5];
+                        p[0] = new SqlParameter("@emplname", SqlDbType.VarChar, 50);
+                        p[0].Value = "suri";
+                        p[1] = new SqlParameter("@age", SqlDbType.SmallInt);
+                        p[1].Value = 20;
+                        p[2] = new SqlParameter("@salary", SqlDbType.Money);
+                        p[2].Value = 572158;
+                        p[3] = new SqlParameter("@pf", SqlDbType.Decimal);
+                        p[3].Value = 2452.25;
+                        p[4] = new SqlParameter("@mobile", SqlDbType.BigInt);
+                        p[4].Value = 467576785;
+                        cmd.Parameters.AddRange(p);
+                        con.Open();
+                        cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+            }
+        }
+        private static void updatestored()
+        {
+            string str = "Data Source=192.168.50.95;Initial Catalog=jshaik;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False";
+            using(SqlConnection con=new SqlConnection(str))
+            {
+                using(SqlCommand cmd=new SqlCommand("newsp", con))
+                {
+                    SqlParameter[] p = new SqlParameter[5];
+                    p[0] = new SqlParameter("@emplname", SqlDbType.VarChar, 50);
+                    p[0].Value = "HASUNUDDIN";
+                    p[1] = new SqlParameter("@age", SqlDbType.SmallInt);
+                    p[1].Value = 24;
+                    p[2] = new SqlParameter("@salary", SqlDbType.Money);
+                    p[2].Value = 434212;
+                    p[3] = new SqlParameter("@pf", SqlDbType.Decimal);
+                    p[3].Value = 3250.23;
+                    p[4] = new SqlParameter("@mobile", SqlDbType.BigInt);
+                    p[4].Value = 76576;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddRange(p);
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+        private static void display()
+        {
+            string str = "Data Source=192.168.50.95;Initial Catalog=jshaik;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False";
+            SqlConnection con = new SqlConnection(str);
+            var sql = "select * from employees11december20";
+            SqlCommand cmd = new SqlCommand(sql, con);
+            SqlDataAdapter ad = new SqlDataAdapter(cmd);
+            DataTable table = new DataTable();
+            con.Open();
+            ad.Fill(table);
+            ad.Dispose();
+            cmd.Dispose();
+            foreach(DataRow r in table.Rows)
+            {
+                Console.WriteLine(r["emplid"]+"    "+r["emplname"]+"   "+r["age"]+"  "+r["salary"]+"   "+r["pf"]+"   "+r["mobile"]+"   "+r["empid"]);
+            }
+        }
+        private static void displaystored()
+        {
+            string str = "Data Source=192.168.50.95;Initial Catalog=jshaik;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False";
+            SqlConnection con = new SqlConnection(str);
+            var sql = "newsp";
+            SqlCommand cmd = new SqlCommand(sql, con);
+            SqlDataAdapter ad = new SqlDataAdapter(cmd);
+            DataTable table = new DataTable();
+            con.Open();
+            cmd.CommandType = CommandType.StoredProcedure;
+            
+            ad.Fill(table);
+            ad.Dispose();
+            cmd.Dispose();
+            foreach (DataRow r in table.Rows)
+            {
+                Console.WriteLine(r["emplid"] + "  |  " + r["emplname"] + "  | " + r["age"] + " | " + r["salary"] + " |  " + r["pf"] + "  | " + r["mobile"] + "  | " + r["empid"]);
+            }
+
+        }
+        private static void multipleresults()
+        {
+            string str = "Data Source=192.168.50.95;Initial Catalog=jshaik;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False";
+            DataSet data = new DataSet();
+            using (SqlConnection con = new SqlConnection(str))
+            {
+                using(SqlCommand cmd=new SqlCommand("multiple", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    using(SqlDataAdapter ad=new SqlDataAdapter(cmd))
+                    {
+                        ad.Fill(data);
+                    }
+                }
+            }
+            Console.WriteLine("=============employees11decmber20========");
+            foreach (DataRow r in data.Tables[0].Rows)
+            {
+                Console.WriteLine(r["emplid"] + "    " + r["emplname"] + "   " + r["age"] + "  " + r["salary"] + "   " + r["pf"] + "   " + r["mobile"] + "   " + r["empid"]);
+            }
+            Console.WriteLine("============employee11===========");
+            foreach (DataRow r in data.Tables[1].Rows)
+            {
+                Console.WriteLine(r["emplid"] + "  |  " + r["empname"] + " |  " + r["emplastname"] + " | " + r["empage"] + "  | " + r["empsalary"] );
+            }
+
+        }
+        private static void reader()
+        {
+            string str = "Data Source=192.168.50.95;Initial Catalog=jshaik;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False";
+            using (SqlConnection con = new SqlConnection(str)) 
+            {
+                using (SqlCommand cmd = new SqlCommand("multiple", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    con.Open();
+                    using(SqlDataReader r = cmd.ExecuteReader(CommandBehavior.CloseConnection))
+                    {
+                        while (r.Read())
+                        {
+                            Console.WriteLine(r["emplid"]+"  |   "+r["emplname"]+"   |    "+r["age"]+"   |   "+r["salary"]+"   |   "+r["pf"]+"   |   "+r["mobile"]+"  |  "+r["empid"]);
+                        }
+                        r.Close();
+                    }
+                }
+            }
+        }
+        private static void multiplereader()
+        {
+            string str = "Data Source=192.168.50.95;Initial Catalog=jshaik;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False";
+            using(SqlConnection con=new SqlConnection(str))
+            {
+                using (SqlCommand cmd = new SqlCommand("multiple", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    con.Open();
+                    using (SqlDataReader r = cmd.ExecuteReader(CommandBehavior.CloseConnection))
+                    {
+                        Console.WriteLine("==========table1==========");
+                        while (r.Read())
+                        {
+                            Console.WriteLine(r["emplid"] + "    " + r["emplname"] + "   " + r["age"] + "  " + r["salary"] + "   " + r["pf"] + "   " + r["mobile"] + "   " + r["empid"]);
+                        }
+                        r.NextResult();
+                        Console.WriteLine("============table2============");
+                        while (r.Read())
+                        {
+                            Console.WriteLine(r["emplid"] + "  |  " + r["empname"] + " |  " + r["emplastname"] + " | " + r["empage"] + "  | " + r["empsalary"]);
+                        }
+                    }
+                }
+            }
+        }
+        private static void transaction()
+        {
+            string str = "Data Source=192.168.50.95;Initial Catalog=jshaik;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False";
+            using(SqlConnection con=new SqlConnection(str))
+            {
+                con.Open();
+                var transaction = con.BeginTransaction();
+                try
+                {
+                    var sql = "insert into employees11december20(emplname) values(@emplname)";
+                    using (SqlCommand cmd = new SqlCommand(sql, con))
+                    {
+                        cmd.Parameters.AddWithValue("@emplname", "chan");
+                        cmd.Transaction = transaction;
+                        cmd.ExecuteNonQuery();
+                    }
+                    sql = "insert into employee11dec(employeename) values (@employeename)";
+                    using (SqlCommand cmd = new SqlCommand(sql, con))
+                    {
+                        cmd.Parameters.AddWithValue("@employeename", "abdul");
+                        cmd.Transaction = transaction;
+                        cmd.ExecuteNonQuery();
+
+                    }
+                    transaction.Commit();
+                    con.Close();
+                }
+                catch(Exception ex)
+                {
+                    transaction.Rollback();
+                    Console.WriteLine("error occured"+ex.ToString());
+                    
+                }
+                finally
+                {
+                    transaction.Dispose();
+                }
+            }
+        }
+    }
+}
