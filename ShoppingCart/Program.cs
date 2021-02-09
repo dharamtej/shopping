@@ -15,7 +15,7 @@ namespace ShoppingCart
         {
             CreateHostBuilder(args).Build().Run();
         }
-//This is the Startup file in ShoppingKart
+
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
